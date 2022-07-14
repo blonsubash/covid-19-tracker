@@ -15,6 +15,24 @@ import Map from "./Map";
 function App() {
   const [countries, setCountries] = useState([]);
   const [country, setCountry] = useState("worldwide");
+  const [countryInfo, setCountryInfo] = useState({});
+
+  const onCountryChange = async (event) => {
+    const countryCode = event.target.value;
+
+    const url =
+      countryCode === "worldwide"
+        ? "https://disease.sh/v3/covid-19/all"
+        : `https://disease.sh/v3/covid-19/countries/${countryCode}`;
+
+    await fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        setCountry(countryCode);
+
+        setCountryInfo(data);
+      });
+  };
 
   useEffect(() => {
     const getCountiresData = async () => {
@@ -30,12 +48,15 @@ function App() {
     };
     getCountiresData();
   }, []);
-  const onCountryChange = async (event) => {
-    const countryCode = event.target.value;
-    console.log("code", countryCode);
-    setCountry(countryCode);
-  };
-  console.log(countries);
+
+  useEffect(() => {
+    fetch("https://disease.sh/v3/covid-19/all")
+      .then((response) => response.json())
+      .then((data) => {
+        setCountryInfo(data);
+      });
+  }, []);
+
   return (
     <div className="app">
       <div className="app__left">
@@ -56,9 +77,21 @@ function App() {
           </FormControl>
         </div>
         <div className="app__stats">
-          <InfoBox title="Coronavirus Cases" total={2000} cases={123} />
-          <InfoBox title="Recovered Cases" total={3000} cases={123} />
-          <InfoBox title="Deaths" total={100} cases={123} />
+          <InfoBox
+            title="Coronavirus Cases"
+            total={countryInfo?.cases}
+            cases={countryInfo?.todayCases}
+          />
+          <InfoBox
+            title="Recovered Cases"
+            total={countryInfo?.recovered}
+            cases={countryInfo?.todayRecovered}
+          />
+          <InfoBox
+            title="Deaths"
+            total={countryInfo?.deaths}
+            cases={countryInfo?.todayDeaths}
+          />
         </div>
         <Map />
       </div>
