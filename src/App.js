@@ -6,6 +6,7 @@ import {
   CardContent,
   Card,
 } from "@mui/material";
+import "leaflet/dist/leaflet.css";
 
 import "./App.css";
 
@@ -20,6 +21,8 @@ function App() {
   const [country, setCountry] = useState("worldwide");
   const [countryInfo, setCountryInfo] = useState({});
   const [tableData, setTableData] = useState([]);
+  const [mapCenter, setMapCenter] = useState({ lat: 28, lng: 84 });
+  const [mapZoom, setMapZoom] = useState(5);
 
   const onCountryChange = async (event) => {
     const countryCode = event.target.value;
@@ -33,8 +36,10 @@ function App() {
       .then((response) => response.json())
       .then((data) => {
         setCountry(countryCode);
-
         setCountryInfo(data);
+
+        setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
+        setMapZoom(5);
       });
   };
 
@@ -99,7 +104,7 @@ function App() {
             cases={countryInfo?.todayDeaths}
           />
         </div>
-        <Map />
+        <Map center={mapCenter} zoom={mapZoom} />
       </div>
       <Card className="app__right">
         <CardContent>
