@@ -3,9 +3,12 @@ import { Card, CardContent, Typography } from "@mui/material";
 
 import "./infoBox.css";
 
-function InfoBox({ title, cases, total, ...props }) {
+function InfoBox({ title, cases, active, total, ...props }) {
   return (
-    <Card className="infoBox" onClick={props.onClick}>
+    <Card
+      className={`infoBox ${active && "infoBox--selected"}`}
+      onClick={props.onClick}
+    >
       <CardContent>
         <Typography color="textSecondary" className="infoBox__title">
           {title}
